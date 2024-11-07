@@ -98,6 +98,8 @@ class App {
     // workoutTag.addEventListener('click', this._editForm.bind(this));
     containerWorkouts.addEventListener('click', this._editForm.bind(this));
     eraseBtn.addEventListener('click', this.reset.bind(this));
+
+    // this._mapPolyline();
   }
 
   _getPosition() {
@@ -179,9 +181,10 @@ class App {
         form.classList.remove('hidden');
         inputDistance.focus();
         inputDistance.value = oneValue;
+        inputDuration.value = twoValue;
+        // inputType.value = type;
 
         // Add new object to workout array
-        form.addEventListener('submit', this._newWorkout.bind(this));
       }
     }
     // console.log(e.target.parentNode);
@@ -262,6 +265,19 @@ class App {
 
     this._editForm(workout);
   }
+
+  _mapPolyline() {
+    const [first, second] = this.#workouts;
+    const arrList = [first.coords, second.coords];
+
+    const polyline = L.polyline(arrList, {
+      color: 'red',
+      weight: 4,
+      opacity: 0.7,
+    }).addTo(this.#map);
+
+    this.#map.fitBounds(polyline.getBounds());
+  }
   _renderWorkoutMarker(workout) {
     L.marker(workout.coords)
       .addTo(this.#map)
@@ -278,6 +294,8 @@ class App {
         `${workout.type === 'running' ? '🏃‍♂️' : '🚴'} ${workout.description}`
       )
       .openPopup();
+
+    this._mapPolyline();
   }
 
   _renderWorkout(workout) {
