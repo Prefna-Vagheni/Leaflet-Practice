@@ -9,6 +9,7 @@ const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
 const workoutTag = document.querySelector('.workout');
 const btnsContainer = document.querySelector('.btn__container');
+const eraseBtn = document.querySelector('.erase__btn');
 
 // let mapEvent, map;
 
@@ -96,6 +97,7 @@ class App {
     containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
     // workoutTag.addEventListener('click', this._editForm.bind(this));
     containerWorkouts.addEventListener('click', this._editForm.bind(this));
+    eraseBtn.addEventListener('click', this.reset.bind(this));
   }
 
   _getPosition() {
@@ -142,21 +144,44 @@ class App {
 
   _editForm(e) {
     if (e.target.tagName === 'BUTTON') {
-      const li = e.target.closest('.workout');
-      const ul = li.parentNode;
-      console.log(e.target.dataset.id);
-      console.log(li.dataset.id);
+      const liItem = e.target.closest('.workout');
+      // const ul = li.parentNode;
+      // console.log(liItem.dataset.id);
+      // console.log(e.target.dataset.id);
+      // console.log(e.target.dataset.id);
       if (e.target.dataset.id === 'remove') {
         // ul.removeChild(li);
         // let dataToRemove = JSON.parse(localStorage.getItem('workout'));
         let storeItem;
-
-        this.#data = this.#data.filter(item => {
-          item.id !== li.dataset.id;
-        });
+        console.log(this.#data);
+        this.#data = this.#data.filter(item => item.id !== liItem.dataset.id);
 
         localStorage.setItem('workouts', JSON.stringify(this.#data));
+        location.reload();
         console.log(this.#data);
+      }
+      if (e.target.dataset.id === 'edit') {
+        // console.log('The button you clicked is an edit button.');
+        // capture values from input field
+        const descendingChildren = liItem.querySelectorAll('.workout__value');
+        const [one, two, three, four] = descendingChildren;
+        let oneValue = +one.textContent;
+        let twoValue = +two.textContent;
+        let threeValue = +three.textContent;
+        let fourValue = +four.textContent;
+
+        console.log(descendingChildren);
+        console.log(oneValue, twoValue, threeValue, fourValue);
+        descendingChildren.forEach(el => console.log(el.textContent));
+
+        // Hide workout /../
+        liItem.style.display = 'none';
+        form.classList.remove('hidden');
+        inputDistance.focus();
+        inputDistance.value = oneValue;
+
+        // Add new object to workout array
+        form.addEventListener('submit', this._newWorkout.bind(this));
       }
     }
     // console.log(e.target.parentNode);
@@ -234,6 +259,8 @@ class App {
 
     // Set local storage to all workouts
     this._setLocalStorage();
+
+    this._editForm(workout);
   }
   _renderWorkoutMarker(workout) {
     L.marker(workout.coords)
@@ -312,18 +339,24 @@ class App {
     //   <button class="btn__delete--all">Delete All</button>
     // </div>`;
 
-    if (Object.keys(workout).length > 0) {
-      // let el = document.createElement('div');
-      // el.textContent = 'Delete all';
-      // el.classList.add('btn__delete--all');
-      // containerWorkouts.appendChild(el);
+    // if (Object.keys(workout).length > 0) {
+    // let el = document.createElement('div');
+    // el.textContent = 'Delete all';
+    // el.classList.add('btn__delete--all');
+    // containerWorkouts.appendChild(el);
 
-      // Create a button to delete all workouts
-      const deleteAll = `<div class="erase__btn">
-        <button class="btn__delete--all">Delete All</button>
-      </div>`;
-      containerWorkouts.insertAdjacentHTML('beforeend', deleteAll);
-    }
+    // Create a button to delete all workouts
+    if (!workout) return;
+    eraseBtn.classList.remove('hidden');
+    // const deleteAll = `<div class="erase__btn">
+    //     <button class="btn__delete--all">Delete All</button>
+    //   </div>`;
+    // containerWorkouts.appendChild(deleteAll);
+    // let el = document.createElement('div');
+    // el.textContent = 'Delete all';
+    // el.classList.add('btn__delete--all');
+    // containerWorkouts.appendChild(el);
+    // }
   }
 
   _moveToPopup(e) {

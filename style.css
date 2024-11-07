@@ -141,7 +141,8 @@ a:visited {
   align-items: center;
 }
 
-.form__row--hidden {
+.form__row--hidden,
+.erase__btn.hidden {
   display: none;
 }
 
