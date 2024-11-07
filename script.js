@@ -7,6 +7,8 @@ const inputDistance = document.querySelector('.form__input--distance');
 const inputDuration = document.querySelector('.form__input--duration');
 const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
+const workoutTag = document.querySelector('.workout');
+const btnsContainer = document.querySelector('.btn__container');
 
 // let mapEvent, map;
 
@@ -79,6 +81,7 @@ class App {
   #mapZoom = 13;
   #mapEvent;
   #workouts = [];
+  #data;
 
   constructor() {
     // Get user's position
@@ -91,6 +94,8 @@ class App {
     form.addEventListener('submit', this._newWorkout.bind(this));
     inputType.addEventListener('change', this._toggleElevationField);
     containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
+    // workoutTag.addEventListener('click', this._editForm.bind(this));
+    containerWorkouts.addEventListener('click', this._editForm.bind(this));
   }
 
   _getPosition() {
@@ -133,6 +138,42 @@ class App {
     form.style.display = 'none';
     form.classList.add('hidden');
     setTimeout(() => (form.style.display = 'grid'), 1000);
+  }
+
+  _editForm(e) {
+    if (e.target.tagName === 'BUTTON') {
+      const li = e.target.closest('.workout');
+      const ul = li.parentNode;
+      console.log(e.target.dataset.id);
+      console.log(li.dataset.id);
+      if (e.target.dataset.id === 'remove') {
+        // ul.removeChild(li);
+        // let dataToRemove = JSON.parse(localStorage.getItem('workout'));
+        let storeItem;
+
+        this.#data = this.#data.filter(item => {
+          item.id !== li.dataset.id;
+        });
+
+        localStorage.setItem('workouts', JSON.stringify(this.#data));
+        console.log(this.#data);
+      }
+    }
+    // console.log(e.target.parentNode);
+    // let val;
+    // for (let [key, value] of this.#workouts.entries()) {
+    //   val = this.#workouts[key].distance;
+    // }
+    // console.log(val);
+
+    // if (e.target.classList.contains('workout__value')) {
+    //   let cadenceValue = inputCadence.value;
+    //   let durationValue = inputDuration.value;
+    //   let distanceValue = inputDistance.value;
+    //   let elevationValue = inputElevation.value;
+    //   for (let [key, value] of this.#workouts.entries())
+    //     console.log(key, value);
+    // }
   }
 
   _toggleElevationField() {
@@ -241,7 +282,7 @@ class App {
         <span class="workout__value">${workout.cadence}</span>
         <span class="workout__unit">spm</span>
       </div>
-    </li>
+    
     `;
 
     if (workout.type === 'cycling')
@@ -256,9 +297,33 @@ class App {
           <span class="workout__value">${workout.elevationGain}</span>
           <span class="workout__unit">m</span>
         </div>
-      </li> -->
+      
         `;
+    html += `<div class = 'btn__container'>
+              <button class='btn btn--edit' data-id='edit'>Edit</button>
+              <button class='btn btn--remove' data-id='remove'>Remove</button>
+            </div> 
+          </li> `;
     form.insertAdjacentHTML('afterend', html);
+
+    // if (Object.keys(workout).length > 0) {
+    // Create a button to delete all workouts
+    // const deleteAll = `<div class="erase__btn">
+    //   <button class="btn__delete--all">Delete All</button>
+    // </div>`;
+
+    if (Object.keys(workout).length > 0) {
+      // let el = document.createElement('div');
+      // el.textContent = 'Delete all';
+      // el.classList.add('btn__delete--all');
+      // containerWorkouts.appendChild(el);
+
+      // Create a button to delete all workouts
+      const deleteAll = `<div class="erase__btn">
+        <button class="btn__delete--all">Delete All</button>
+      </div>`;
+      containerWorkouts.insertAdjacentHTML('beforeend', deleteAll);
+    }
   }
 
   _moveToPopup(e) {
@@ -285,11 +350,11 @@ class App {
   }
 
   _getLocalStorage() {
-    const data = JSON.parse(localStorage.getItem('workouts'));
+    this.#data = JSON.parse(localStorage.getItem('workouts'));
 
-    if (!data) return;
+    if (!this.#data) return;
 
-    this.#workouts = data;
+    this.#workouts = this.#data;
 
     // this._renderWorkout();
     this.#workouts.forEach(work => this._renderWorkout(work));

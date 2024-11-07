@@ -188,6 +188,33 @@ a:visited {
 .twitter-link:active {
   color: var(--color-light--2);
 }
+.btn__container {
+  display: flex;
+}
+.btn,
+.btn__delete--all {
+  border-radius: 5px;
+  padding: 0.7rem;
+  margin-right: 1rem;
+  color: whitesmoke;
+  border: none;
+  min-width: 7rem;
+}
+.btn__delete--all {
+  text-transform: uppercase;
+  min-width: 10rem;
+  background-color: red;
+  margin: 1rem auto;
+  align-self: center;
+}
+.btn--edit {
+  background: var(--color-brand--2);
+}
+.btn--remove {
+  /* background: rgb(177, 101, 101); */
+  /* background: var(--color-brand--1); */
+  background: #ad3700;
+}
 
 /* MAP */
 #map {
